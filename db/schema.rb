@@ -10,20 +10,22 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110330072321) do
+ActiveRecord::Schema.define(:version => 20110331041803) do
 
   create_table "features", :force => true do |t|
-    t.string "name"
-    t.string "triposo_id"
-    t.string "type"
-    t.string "poicat"
-    t.string "poitype"
-    t.float  "lat"
-    t.float  "lng"
-    t.float  "score"
-    t.text   "html"
+    t.string  "name"
+    t.string  "triposo_id"
+    t.string  "type"
+    t.string  "poicat"
+    t.string  "poitype"
+    t.float   "lat"
+    t.float   "lng"
+    t.float   "score"
+    t.text    "html"
+    t.integer "first_zoom_level"
   end
 
+  add_index "features", ["first_zoom_level"], :name => "index_features_on_first_zoom_level"
   add_index "features", ["lat"], :name => "index_features_on_lat"
   add_index "features", ["lng"], :name => "index_features_on_lng"
   add_index "features", ["score"], :name => "index_features_on_score"
