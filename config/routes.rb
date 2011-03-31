@@ -1,4 +1,7 @@
 Webguide::Application.routes.draw do
+  root :to => "index#map"
+  resources :features
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
