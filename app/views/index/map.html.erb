@@ -1,12 +1,65 @@
 <script>
+
+var featuresUrl = '<%= features_url(:format => 'json') %>';
+
 function WebGuideMap(element) {
-	var latlng = new google.maps.LatLng(-34.397, 150.644);
+  var latlng = new google.maps.LatLng(0, 0);
   var myOptions = {
-    zoom: 8,
+    zoom: 2,
     center: latlng,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
   var map = new google.maps.Map(element, myOptions);
+
+  var features = [];
+  var markers = [];
+
+  function renderFeatures() {
+    while (markers.length > 0) {
+      var marker = markers.shift();
+      marker.setMap(null);
+    }
+    _(features).each(function(feature) {
+      feature = feature['feature'];
+      var marker = new google.maps.Marker({
+        map: map,
+        position: new google.maps.LatLng(feature['lat'], feature['lng']),
+        title: feature['name']
+      });
+      markers.push(marker)
+    });
+  }
+
+  var reloadFeaturesTask = null;
+
+  function reloadFeatures() {
+    reloadFeaturesTask = null;
+    window.console.log('reloadFeatures')
+    var bounds = map.getBounds();
+    if (bounds) {
+      var data = {
+        zoom: map.getZoom(),
+        minlat: bounds.getSouthWest().lat(),
+        maxlat: bounds.getNorthEast().lat(),
+        minlng: bounds.getSouthWest().lng(),
+        maxlng: bounds.getNorthEast().lng()
+      };
+      var xhr = $.ajax(
+          {url: featuresUrl, method: 'GET', data: data})
+          .success(function(data) {
+            features = data;
+            renderFeatures();
+          });
+    }
+  }
+
+  google.maps.event.addListener(map, 'bounds_changed', function() {
+    if (!reloadFeaturesTask) {
+      reloadFeaturesTask = setTimeout(reloadFeatures, 100);
+    }
+  });
+
+  reloadFeatures();
 }
 
 $(function() {

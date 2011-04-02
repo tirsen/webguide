@@ -1,0 +1,2 @@
+Import using:
+COPY features (id, triposo_id, name, type, score, lat, lng, html) FROM '/Users/tirsen/triposo/webguide/db/dumps/features20110316.csv' WITH DELIMITER ',' CSV;

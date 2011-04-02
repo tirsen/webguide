@@ -2,11 +2,23 @@ class FeaturesController < ApplicationController
   # GET /features
   # GET /features.xml
   def index
-    @features = Feature.all
+    zoom = params[:zoom]
+    minlat = params[:minlat]
+    maxlat = params[:maxlat]
+    minlng = params[:minlng]
+    maxlng = params[:maxlng]
+    raise 'Need zoom' unless zoom
+
+    @features = Feature.
+        limit(128).
+        order('score DESC').
+        where('first_zoom_level <= ? AND (lat BETWEEN ? AND ?) AND (lng BETWEEN ? AND ?)',
+              zoom.to_i, minlat.to_f, maxlat.to_f, minlng.to_f, maxlng.to_f)
 
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @features }
+      format.json  { render :json => @features }
     end
   end
 
